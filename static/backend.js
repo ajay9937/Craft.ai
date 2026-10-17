@@ -10,7 +10,7 @@ class Android{
 	static callPython(name, args){
 		let formData = new FormData();
 		formData.append("func", name);
-		formData.append("args", JSON.stringify(args));
+		formData.append("args", args);
 
 		let xhr = new XMLHttpRequest();
 		xhr.open("POST", "/func", false);
@@ -56,6 +56,11 @@ function onStart(){
 
 async function processFiles(query, data){
 	console.log("processing files")
+	let box = document.createElement("div");
+	box.innerHTML = "processing files";
+	$(".chats").appendChild(box);
+	alert("processing files")
+	console.log(data)
 	for(let i = 0; i < data.length; i++){
 		const response = await fetch("/processFile", {
 		    method: "POST",
@@ -79,9 +84,15 @@ async function processFiles(query, data){
 		    console.error("Processing failed:", res);
 		}
 		else{
+			let box = document.createElement("div");
+			box.innerHTML = `${data[i]["file_name"]} done`;
+			$(".chats").appendChild(box);
 			console.log(`${data[i]["file_name"]} done`)
 		}
 	}
+	box = document.createElement("div");
+	box.innerHTML = "done";
+	$(".chats").appendChild(box);
 }
 // processFiles("i need a youtube video downloader app.", [
 //   {
@@ -122,6 +133,7 @@ async function processFiles(query, data){
 
 async function submitQuery(){
 	console.log("asking request")
+	alert("asking request")
 	let box = document.createElement("div");
 	box.innerHTML = queryBox.value;
 	$(".chats").appendChild(box);
@@ -136,10 +148,11 @@ async function submitQuery(){
 	    })
 	})
 	.then(response => response.json())
-	.then(data => processFiles(data)["plan"]);
+	.then(data => processFiles(queryBox.value, data["plan"]));
 }
 
 function triggerUI(){
+	setTesterWindow()
 	if(showUI){
 		navBar.style = "";
 		phoneMock.style = "";
