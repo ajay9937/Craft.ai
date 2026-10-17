@@ -70,7 +70,7 @@ def plan_files():
 	The application features a simple HTML/JS frontend and a Python backend (main.py).
 
 	Architecture Rules:
-	1. The JS frontend communicates with the Python backend exclusively using the bridge method: Android.callPython("func_name", [param1, param2]).
+	1. The JS frontend communicates with the Python backend exclusively using the bridge method: res = Android.callPython("func_name", JSON.stringify([param1, param2])).  // res is string
 	2. The Python backend (main.py) must expose the exact functions targeted by the JS bridge.
 	3. Include a simple index.html, the associated JS file, and main.py.
 	4. Output the relative file paths and the list of specific function signatures or event listeners they contain.
@@ -91,7 +91,7 @@ def plan_files():
 	final_json_list = [file.model_dump() for file in generated_plan.files]
 
 	print(json.dumps(final_json_list, indent=2))
-	return jsonify({"plan": json.dumps(final_json_list, indent=4)})
+	return jsonify({"plan": final_json_list})
 
 @app.route("/processFile", methods=["POST"])
 def process_file():
@@ -128,8 +128,8 @@ def process_file():
         temperature=0.1
     )
 	res = response.choices[0].message.parsed.code
-	with open(f"static/output/{data["file"]}", "w") as f:
-		f.write(res)
+	with open(output_path, "w", encoding="utf-8", newline="\n") as f:
+	    f.write(res)
 	return jsonify({"success": True})
 
 if __name__ == "__main__":
