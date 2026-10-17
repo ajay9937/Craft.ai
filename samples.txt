@@ -1,0 +1,202 @@
+# THIS FILE CONATINS EXAMPLES OF PROJECTS USING ANVPY SO READ AND UNDERSTAND ALL AS YOU ARE GOING TO USE THESE CODES IN YOUR PROJECTS IF YOU NEED THESE FEATURES.
+
+1. A LIVE FACE DETECTION WEB APP USING OPENCV VIDEOCAPTURE AND USING FLASK ONLY ON ANDROID TO SEND VIDEO STREAMS
+
+---- main.py
+
+IS_ANDROID = True
+try:
+	from web import WebApp
+except Exception:
+	IS_ANDROID = False
+import threading
+import sys, cv2
+
+cli = sys.modules["flask.cli"]
+cli.show_server_banner = lambda *x: None
+camera = cv2.VideoCapture(1)
+detector = cv2.FaceDetectorYN.create("face_detection_yunet_2023mar.onnx","",(480, 640))
+
+def generate_frames():
+    while True:
+        success, frame = camera.read()
+        frame = cv2.cvtColor(frame, cv2.COLOR_YUV2BGR_NV21)
+        frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        if not success:
+            break
+  
+        detector.setInputSize((frame.shape[1], frame.shape[0]))
+
+        # Detect faces
+        _, faces = detector.detect(frame)
+
+        if faces is not None:
+            for face in faces:
+                x, y, w, h = map(int, face[:4])
+                cv2.rectangle(
+                    frame,
+                    (x, y),
+                    (x + w, y + h),
+                    (0, 255, 0),
+                    2
+                )
+        
+        success, buffer = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 20])
+
+        if not success:
+            continue
+
+        frame_bytes = buffer.tobytes()
+
+        yield (
+            b"--frame\r\n"
+            b"Content-Type: image/jpeg\r\n\r\n"
+            + frame_bytes
+            + b"\r\n"
+        )
+
+# flask module only available on android
+if IS_ANDROID:
+	from flask import Flask, request, jsonify, Response
+
+	app = Flask(name)
+	@app.get("/")
+	def get_stream():
+	    return Response(
+	        generate_frames(),
+	        mimetype="multipart/x-mixed-replace; boundary=frame"
+	    )
+	    
+	def run_server():
+	    print("App running")
+	    app.run(host="127.0.0.1", port=5000, debug=False, threaded=True)  
+
+	thread = threading.Thread(target=run_server, args=())
+	thread.daemon = True
+	thread.start()
+
+	web = None
+	web = WebApp("index.html")
+	web.run()
+else:
+	print("Android platform not supported")
+
+--html
+
+<img src="http://localhost:5000">
+
+
+
+2. CODE FOR ANDROID FILE CHOOSER LAUNCHER THAT CHOOSES AND SAVES THE FILE IN LOCATION USING CHAQUOPY JAVA MOUDLE.
+
+import os
+import threading
+import random
+import sys
+
+try:
+	from java import jclass, jarray, jbyte, dynamic_proxy
+except Exception:
+	print("Not an android environment")
+	sys.exit(0)
+
+# always use this to get context
+activity = jclass("org.anvlabs.anvpy.NewActivity").ctx
+
+# Load Android classes
+Intent = jclass("android.content.Intent")
+Uri = jclass("android.net.Uri")
+
+# Access the ActivityResultListener interface exposed by your activity
+ActivityResultListener = activity.class.ActivityResultListener
+
+class ChooserCallback(dynamic_proxy(ActivityResultListener)):
+    """
+    Hooks into your custom Activity's onActivityResult pipeline.
+    """
+    def init(self, request_code, save_path, on_complete):
+        super().init()
+        self.request_code = request_code
+        self.save_path = save_path
+        self.on_complete = on_complete
+
+    def onActivityResult(self, requestCode, resultCode, data):
+        # 1. Check if this is the result for our specific file chooser
+        if requestCode == self.request_code:
+            # Unregister the listener immediately to prevent memory leaks
+            activity.unregisterActivityResultListener(self)
+            
+            # 2. Check if the user successfully picked a file
+            if resultCode != activity.RESULT_OK or data is None:
+                if self.on_complete:
+                    self.on_complete(False, "User cancelled file selection")
+                return
+
+            uri = data.getData()
+            if not uri:
+                if self.on_complete:
+                    self.on_complete(False, "Failed to retrieve file URI")
+                return
+
+            # 3. Process the file in a background thread to avoid freezing the UI
+            threading.Thread(target=self._read_and_save, args=(uri,)).start()
+
+    def _read_and_save(self, uri):
+        try:
+            content_resolver = activity.getContentResolver()
+            
+            # Ensure the destination directory exists
+            os.makedirs(os.path.dirname(self.save_path), exist_ok=True)
+            
+            # Open Android URI stream 
+            input_stream = content_resolver.openInputStream(uri)
+            if not input_stream:
+                raise Exception("Failed to open Android input stream")
+            
+            # Create a 4KB Java byte array for memory-efficient reading
+            buffer = jarray(jbyte)(4096)
+            
+            with open(self.save_path, 'wb') as out_file:
+                while True:
+                    bytes_read = input_stream.read(buffer)
+                    if bytes_read == -1: # End of stream
+                        break
+                    # Convert Java byte array to Python bytes and write to file
+                    out_file.write(bytes(buffer)[:bytes_read])
+            
+            input_stream.close()
+            
+            if self.on_complete:
+                self.on_complete(True, self.save_path)
+                
+        except Exception as e:
+            if self.on_complete:
+                self.on_complete(False, str(e))
+
+
+def choose_and_save_file(mime_type, save_path, on_complete=None):
+    """
+    Opens the Android File Chooser and saves the selected file.
+    
+    :param mime_type: String (e.g., "application/pdf" or "image/*" or "*/*")
+    :param save_path: Absolute path string where the file should be saved
+    :param on_complete: Function taking (success: bool, result_or_error: str)
+    """
+    # 1. Generate a random request code (Android requires 16-bit int)
+    request_code = random.randint(1000, 60000)
+    
+    # 2. Create the Python proxy callback
+    callback = ChooserCallback(request_code, save_path, on_complete)
+    
+    # 3. Register the callback with your custom activity
+    activity.registerActivityResultListener(callback)
+    
+    # 4. Build the Intent to open the Android file chooser
+    intent = Intent(Intent.ACTION_GET_CONTENT)
+    intent.setType(mime_type)
+    intent.addCategory(Intent.CATEGORY_OPENABLE)
+    
+    chooser = Intent.createChooser(intent, "Select a file")
+    
+    # 5. Launch the chooser
+    activity.startActivityForResult(chooser, request_code)
