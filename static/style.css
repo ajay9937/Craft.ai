@@ -1,0 +1,249 @@
+*{
+	margin: 0;
+	outline: none;
+	font-family: system-ui;
+}
+body{
+	overflow: hidden;
+}
+@keyframes poke_ball_rotate{
+	from{ transform:rotate(0deg); }
+	to{ transform:rotate(360deg); }
+}
+@keyframes processing-content-text{
+	0%{ content:"   "; }
+	25%{ content:".  "; }
+	50%{ content:".. "; }
+	75%{ content:"..."; }
+	100%{ content:"..."; }
+}
+.prompt-box{
+	width:50vw;
+	position: fixed;
+	left:37.5vw;
+	bottom: 5vh;
+	display: flex;
+	flex-flow: column nowrap;
+	row-gap: 10px;
+	transition: .7s ease;
+}
+.input-content{
+	background: white;
+	display: flex;
+	flex-flow: column nowrap;
+	row-gap: 20px;
+	
+	border:0.5px solid rgba(0, 0, 0, 0.2);
+	box-sizing: border-box;
+	border-radius: 25px;
+	padding:25px;
+	z-index: 2;
+}
+.prompt-box textarea{
+	width: 100%;
+	border:0;
+	padding: 5px;
+	font-family: "Google Sans", system-ui;
+	font-size: 15px;
+	letter-spacing: .3px;
+	resize: none;
+	height: 30px;
+	padding-top: 5px;
+}
+.options-box{
+	width: 100%;
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	justify-content: space-between;
+}
+.options-box > div{
+	display: flex;
+	align-items: center;
+	column-gap: 15px;
+}
+.small-icon{
+	width: 20px;
+	height: 20px;
+}
+.round-icon{
+	border-radius: 100%;
+	object-fit: center;
+}
+.medium-icon{
+	width: 30px;
+	height: 30px;
+}
+.image-upload-button, .model-chooser-button, .processing-text{
+	cursor: pointer;
+	padding: 10px 15px;
+	background: #ebecfa;
+	display: flex;
+	align-items: center;
+	column-gap: 10px;
+	border-radius: 5px;
+}
+.processing-text{
+	position: relative;
+	pointer-events: none;
+	width: fit-content;
+	background: transparent;
+	opacity: 0;
+	transition: .3s ease-out;
+}
+.processing-text > p{
+	color: grey;
+}
+.processing-text > p::after{
+	animation: processing-content-text 5s linear infinite;
+	content:"";
+}
+.processing-text > img{
+	animation: poke_ball_rotate 0.5s linear infinite;
+}
+.model-chooser-button{
+	background: transparent;
+}
+.model-chooser-button > p{
+	font-family: "Google Sans", system-ui;
+}
+.image-upload-button *{
+	filter: invert(0.2);
+}
+.loader-text{
+	color: #999999;
+}
+.submit-button{
+	padding: 7px;
+	background: #cccccc;
+}
+.tester{
+	width: 25vw;
+	height: 90vh;
+	position: relative;
+	background-image: url(/static/images/mobile-white.png);
+	background-size: 100% 100%;
+	left:5vw;
+	top:5vh;
+	overflow: hidden;
+	z-index: 2;
+	opacity: 0;
+	pointer-events: none;
+	transition: .2s;
+}
+.mockup{
+	width: 29.5vw;
+	height: 90.5vh;
+	position: absolute;
+	transform-origin: center;
+	top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+	z-index: 3;
+	border:0;
+	zoom: 0.8;
+}
+.chats{
+	width: 70vw;
+	height: 90vh;
+	position: fixed;
+	top:0vh;
+	left:30vw;
+	overflow-y: scroll;
+	padding: 5vh 10vw 0 10vw;
+	box-sizing: border-box;
+}
+.chats > div{
+	margin-top: 2vh;
+	display: block;
+	width: fit-content;
+	padding: 15px;
+	background: #333333;
+	color: white;
+	border-radius: 10px;
+	max-width: 70%;
+	clear: right;
+	font-size: 15px;
+	overflow: hidden;
+}
+.chats > .ai{
+	background: transparent;
+	color: black;
+	margin-left: auto;
+}
+.chats > .ai > div{
+	display: flex;
+	align-items: center;
+	column-gap: 20px;
+	font-size: 17px;
+}
+.chats img{
+	animation: poke_ball_rotate 0.5s linear infinite;
+}
+.chats > .ai > span{
+	word-break: break-all;
+	display: none;
+}
+.tmp{
+	display: none;
+}
+.nav_bar{
+	width: 25vw;
+	height: 100vh;
+	padding: 20px;
+	box-sizing: border-box;
+	position: fixed;
+	border-right: 1px solid #cccccc;
+	transition: 0.5s;
+	z-index: 4;
+}
+.flex-row{
+	display: flex;
+	flex-flow: row nowrap;
+	column-gap: 20px;
+	align-items: center;
+}
+.nav_bar strong{
+	color: #333333;
+	font-family: system-ui;
+}
+.nav_bar .opt:hover{
+	background-color: #e2e2e2;
+}
+.nav_bar .opt{
+	font-size: 13px;
+	padding: 7px 12px;
+	transition: .2s;
+	cursor: pointer;
+	border-radius: 15px;
+}
+.nav_bar p{
+	font-family: "Google Sans", system-ui;
+}
+.nav_bar span{
+	display: block;
+	margin-top: 30px;
+	font-family: "Google Sans", system-ui;
+	font-size: 14px;
+	color: #999999;
+	font-weight: 500;
+}
+.search_chats{
+	width: 100%;
+	height: 47vh;
+	padding: 20px 0;
+	box-sizing: border-box;
+	font-size: 15px;
+}
+.search_chats p{
+	white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: .1s;
+}
+.search_chats p:hover{
+	background-color: rgba(0, 0, 0, 0.03);
+}
