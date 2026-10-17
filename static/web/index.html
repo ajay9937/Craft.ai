@@ -1,1 +1,95 @@
-
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/png" href="/static/icons/poke-ball.png">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+	<title>Craft AI: Build Realtime Apps in Seconds.</title>
+	<script src="/static/backend.js"></script>
+	<link rel="stylesheet" href="/static/style.css">
+</head>
+<body onload="onStart()">
+	<div class="tmp">
+		<div>
+			<img src="/static/icons/poke-ball.png" class="medium-icon">
+			<p class="loader-text">Processing your query and making plans</p>
+		</div>
+		<span>Files generated</span>
+	</div>
+	<div class="nav_bar">
+		<div class="flex-row">
+			<img src="/static/icons/poke-ball.png" class="medium-icon">
+			<strong>Craft.ai</strong>
+		</div><br><br>
+		<div class="flex-row opt">
+			<img src="/static/icons/new-chat.png" class="small-icon">
+			<p>New chat</p>
+		</div>
+		<div class="flex-row opt">
+			<img src="/static/icons/dark.png" class="small-icon">
+			<p>Drak theme</p>
+		</div>
+		<div class="flex-row opt">
+			<img src="/static/icons/export.png" class="small-icon">
+			<p>Production</p>
+		</div>
+		<div class="flex-row opt">
+			<img src="/static/icons/share.png" class="small-icon">
+			<p>Share</p>
+		</div>
+		<div class="flex-row opt">
+			<img src="/static/icons/points.png" class="small-icon">
+			<p>Credits: &nbsp;&nbsp;<b>2000</b></p>
+		</div>
+		<span>Search chats</span>
+		<div class="search_chats">
+			<p>Make a nice weather app with some modification and extra </p>
+			<p>Create a youtube video downloader app.</p>
+			<p>Caluclator app overview.</p>
+		</div>
+		<div class="profile">
+			<div class="flex-row" style="justify-content: space-between;">
+				<div class="flex-row">
+					<img src="/static/images/selfie.jpg" class="round-icon medium-icon">
+					<strong>Amar Sahu</strong>
+				</div>
+				<img src="/static/icons/logout.png" class="small-icon" style="filter: brightness(0) saturate(100%) invert(47%) sepia(37%) saturate(1768%) hue-rotate(327deg) brightness(94%) contrast(120%);">
+			</div>
+		</div>
+	</div>
+	<div class="chats">
+	</div>
+	<div class="tester">
+		<iframe class="mockup" src=""></iframe>
+	</div>
+	<div class="prompt-box">
+		<div class="processing-text">
+			<img src="/static/icons/poke-ball.png" class="medium-icon">
+			<p class="loader-text">Processing your query and making plans</p>
+		</div>
+		<div class="input-content">
+			<textarea placeholder="What can i build for you today ?" spellcheck="false" class="query-box"></textarea>
+			<div class="options-box">
+				<div>
+					<div class="image-upload-button debug-button" onclick="triggerUI()">
+						<img src="/static/icons/launch.png" class="small-icon">
+						<p>Debug</p>
+					</div>
+					<div class="image-upload-button">
+						<img src="/static/icons/cast.png" class="small-icon">
+					</div>
+				</div>
+				<div>
+					<img src="/static/icons/mic.png" class="small-icon">
+					<div class="image-upload-button submit-button" onclick="submitQuery()">
+						<img src="/static/icons/up-arrow.png" class="small-icon">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
